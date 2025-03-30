@@ -12,7 +12,9 @@ setuptools.setup(
         "pandas==2.2.3",
         "pillow==10.4.0",
         "tqdm==4.67.1",
-        "yt-dlp==2025.3.27"
+        "yt-dlp==2025.3.27",
+        "requests==2.32.3",
+        "feedparser==6.0.11"
     ],
     author="Greg",
     author_email="houzeyu2683@gmail.com",

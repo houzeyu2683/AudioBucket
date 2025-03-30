@@ -3,6 +3,7 @@ import os
 import pandas
 import urllib.parse
 import requests
+import hashlib
 
 class Engine:
 
@@ -12,18 +13,24 @@ class Engine:
         return
 
     def pullCatalog(self) -> bool:
-        chunk = {'title': [], 'name': [], 'length': [], 'link': [], 'format': []}
+        chunk = {'title': [], 'name': [], 'link': [], 'duration': [], 'suffix': []}
         response = feedparser.parse(self.link)
         for channel in response['entries']:
             assert len(channel['enclosures'])==1
-            item = channel['enclosures'][0]
-            content = os.path.dirname(item['href'])
-            code = os.path.basename(item['href'])
-            chunk['title'] += [channel['title']]
-            chunk['name'] += [os.path.basename(content)]
-            chunk['link'] += [urllib.parse.unquote(code)]
-            chunk['length'] += [item['length']]
-            chunk['format'] += [code[str(code).rfind('.')+1:]]
+            title = channel['title']
+            name = hashlib.md5(str(title).encode()).hexdigest()
+            if('item'):
+                item = channel['enclosures'][0]
+                pass
+            node = str(item['href']).rfind('https://')
+            link = urllib.parse.unquote(item['href'][node:])
+            duration = item['length']
+            suffix = link[str(link).rfind('.')+1:]
+            chunk['title'] += [title]
+            chunk['name'] += [name]
+            chunk['link'] += [link]
+            chunk['duration'] += [duration]
+            chunk['suffix'] += [suffix]
             continue
         catalog = pandas.DataFrame(chunk)
         path = os.path.join(self.storage, 'catalog.csv')
@@ -37,7 +44,7 @@ class Engine:
         folder = os.path.join(self.storage, 'archive')
         os.makedirs(folder, exist_ok=True)
         for index, item in self.catalog.iterrows():
-            path = os.path.join(folder, f"{item['name']}.{item['format']}")
+            path = os.path.join(folder, f"{item['name']}.{item['suffix']}")
             try:
                 response = requests.get(item['link'])
                 pencil = open(path, "wb")
