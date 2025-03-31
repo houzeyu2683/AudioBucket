@@ -21,12 +21,17 @@ class Engine:
             response = session.extract_info(self.link, download=False)
             pass
         information = response['entries']
+        title = [item['title'] for item in information]
         name = [item['id'] for item in information]
-        catalog = pandas.DataFrame({"name": name})
+        catalog = pandas.DataFrame({"name": name, 'title': title})
         path = os.path.join(self.storage, 'catalog.csv')
         os.makedirs(os.path.dirname(path), exist_ok=True)
         catalog.to_csv(path, index=False)
         self.catalog = catalog
+        return(True)
+
+    def readCatalog(self, path: str) -> bool:
+        self.catalog = pandas.read_csv(path)
         return(True)
 
     def pullArchive(self) -> bool:

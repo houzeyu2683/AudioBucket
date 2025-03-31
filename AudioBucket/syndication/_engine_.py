@@ -38,7 +38,11 @@ class Engine:
         catalog.to_csv(path, index=False)
         self.catalog = catalog
         return(True)
-    
+
+    def readCatalog(self, path: str) -> bool:
+        self.catalog = pandas.read_csv(path)
+        return(True)
+        
     def pullArchive(self) -> bool:
         length = len(self.catalog)
         folder = os.path.join(self.storage, 'archive')
