@@ -23,7 +23,8 @@ class Engine:
         information = response['entries']
         title = [item['title'] for item in information]
         name = [item['id'] for item in information]
-        catalog = pandas.DataFrame({"name": name, 'title': title})
+        duration = [item['duration'] for item in information]
+        catalog = pandas.DataFrame({"name": name, 'title': title,'duration': duration})
         path = os.path.join(self.storage, 'catalog.csv')
         os.makedirs(os.path.dirname(path), exist_ok=True)
         catalog.to_csv(path, index=False)
