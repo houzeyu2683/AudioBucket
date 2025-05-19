@@ -52,6 +52,9 @@ class Engine:
                     'key': 'FFmpegExtractAudio',
                     'preferredcodec': 'wav'
                 }],
+                'postprocessor_args': [
+                    '-ar', '16000'
+                ],
                 'paths': {
                     'temp': f'.cache/{name}'
                 }
