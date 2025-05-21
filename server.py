@@ -2,6 +2,7 @@ import gradio
 import pandas
 import feature
 
+secret = feature.getSecret("secret.yaml")
 version = '1.0.0'
 title = 'AudioBucket'
 theme = gradio.themes.Ocean()
@@ -51,5 +52,6 @@ interface.launch(
     server_port=8080, 
     share=False, 
     favicon_path='./metiral/logo.png', 
-    debug=True
+    debug=True,
+    auth=(secret['user'], secret['password'])
 )
