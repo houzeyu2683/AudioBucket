@@ -49,7 +49,8 @@ with gradio.Blocks(title=title, theme=theme) as interface:
     pass
 
 interface.launch(
-    server_port=8080, 
+    server_name='0.0.0.0',
+    server_port=8000, 
     share=False, 
     favicon_path='./metiral/logo.png', 
     debug=True,

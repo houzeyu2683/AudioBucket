@@ -35,5 +35,5 @@ def getTable(link: str, query: str) -> tuple:
         return(response)
     sheet = sheet.query(query, engine='python')
     sheet.to_csv(path, index=False)
-    response = (sheet, path, status, status)
-    return(response)
+    table = (sheet, path, status, status)
+    return(table)
