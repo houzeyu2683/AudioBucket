@@ -52,7 +52,8 @@ class Audio:
                 self.view['table'], 
                 self.archive['table'], 
                 self.archive['table'], 
-                collect
+                collect,
+                self.archive['package']
             ]
         )
         collect.click(
@@ -123,8 +124,9 @@ class Audio:
                 pass
             table.to_csv(path, index=False)
             pass
-        status = gradio.update(visible=True)
-        response = (table, path, status, status)
+        visible = gradio.update(visible=True)
+        invisible = gradio.update(visible=False)
+        response = (table, path, visible, visible, invisible)
         return(response)
 
     def collect(self, path: str) -> tuple:
@@ -190,8 +192,8 @@ class Audio:
             path = os.path.join(folder, "package.zip")
             shutil.move('./package.zip', path)
             pass
-        status = gradio.update(visible=True)
-        response = (path, status)
+        visible = gradio.update(visible=True)
+        response = (path, visible)
         return(response)
 
     archive = {'table': None, 'package': None}
