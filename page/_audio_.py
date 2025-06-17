@@ -7,6 +7,7 @@ import datetime
 import hashlib
 import feedparser
 import requests
+import time
 
 class Audio:
     """
@@ -211,6 +212,7 @@ class Audio:
                     continue
                 session.close()
                 shutil.rmtree(memory, ignore_errors=True)
+                if(index%5==0): time.sleep(5)
                 pass
             # 若來源為 Firstory 播放清單
             # elif('firstory.me' in item['link']):
