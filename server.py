@@ -23,9 +23,16 @@ with gradio.Blocks(title=title) as service:
 
 # 設定 Audio 主題頁面的路由
 topic = 'Audio'
-with service.route(f"{topic}", f"/{topic}"):
+with service.route(topic, f'/{topic}'):
     # 渲染 Audio 頁面元件
     page.Audio(user=secret['user']).renderComponent()
+    pass
+
+# 設定 Video 主題頁面的路由
+topic = 'Video'
+with service.route(topic, f'/{topic}'):
+    # 渲染 Video 頁面元件
+    page.Video(user=secret['user']).renderComponent()
     pass
 
 # 啟動 Gradio 服務

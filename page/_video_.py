@@ -8,9 +8,9 @@ import hashlib
 import feedparser
 import requests
 
-class Audio:
+class Video:
     """
-    音訊處理類別，負責 Gradio 介面渲染、音訊來源搜尋與下載。
+    影片處理類別，負責 Gradio 介面渲染、影片來源搜尋與下載。
     """
 
     # 初始化使用者名稱
@@ -20,7 +20,7 @@ class Audio:
 
     # 渲染 Gradio 互動式元件
     def renderComponent(self) -> None:
-        gradio.HTML(f"<h1 style='text-align: center;'>Audio</h1>")
+        gradio.HTML(f"<h1 style='text-align: center;'>Video</h1>")
         variant = "default"
         with gradio.Row(variant=variant):
             variant = "default"
@@ -38,13 +38,13 @@ class Audio:
                     interactive=False, 
                     visible=False
                 )
-                # 收集音訊按鈕
+                # 收集影片按鈕
                 # 預設隱藏
                 collect = gradio.Button(value='Collect', visible=False)
-                # 下載音訊壓縮包
+                # 下載影片壓縮包
                 # 預設隱藏
                 self.archive['package'] = gradio.File(
-                    label="Download Audio", 
+                    label="Download Video", 
                     interactive=False, 
                     visible=False
                 )
@@ -70,7 +70,7 @@ class Audio:
             # 顯示表格下載區域
             # 顯示表格檔案
             # 顯示收集按鈕
-            # 隱藏音檔下載區域
+            # 隱藏影片下載區域
             outputs=[
                 self.view['table'], 
                 self.archive['table'], 
@@ -79,12 +79,12 @@ class Audio:
                 self.archive['package']
             ]
         )
-        # 綁定收集音訊按鈕事件
+        # 綁定收集影片按鈕事件
         collect.click(
             fn=self.collect,
             inputs=[self.archive['table']],
-            # 顯示音檔下載區域
-            # 顯示音檔檔案
+            # 顯示影片下載區域
+            # 顯示影片檔案
             outputs=[
                 self.archive['package'], 
                 self.archive['package']
@@ -121,30 +121,6 @@ class Audio:
                 'link': link
             })
             pass
-        # 若來源為 Firstory 播放清單
-        # elif('firstory.me' in link):
-        #     channel = getattr(feedparser.parse(link), 'entries')
-        #     queue = []
-        #     for episode in channel:
-        #         assert isinstance(episode, dict)
-        #         existence = episode.get('enclosures', None)
-        #         if(existence==[]): continue
-        #         duration = episode.get('itunes_duration', None)
-        #         title = episode.get("title", None)
-        #         item = dict(episode.get('enclosures')[0])
-        #         # 以 hash 產生唯一檔名
-        #         name = hashlib.sha256(str(item.get("href")).encode()).hexdigest()[:8]
-        #         link = item.get('href')
-        #         value = {
-        #             'title': title,
-        #             'duration': duration,
-        #             'name': name,
-        #             'link': link
-        #         }
-        #         queue += [value]
-        #         continue
-        #     table = pandas.DataFrame(queue)
-        #     pass
         # 移除缺漏值並重設索引
         table = table.dropna().reset_index(drop=True)
         if(True):
@@ -170,7 +146,7 @@ class Audio:
         response = (table, path, visible, visible, invisible)
         return(response)
 
-    # 收集音訊檔案並打包
+    # 收集影片檔案並打包
     def collect(self, path: str) -> tuple:
         # 取得標籤與目錄
         tag = str(os.path.basename(path)).replace(".csv", "")
@@ -186,15 +162,16 @@ class Audio:
             if('youtube' in item['link']):
                 memory = os.path.join(folder, item['name'])
                 option = {
-                    'format': 'bestaudio/best',
+                    'format': 'bestvideo+bestaudio/best',
                     'outtmpl': os.path.join(folder, f"{item['name']}.%(ext)s"),
                     'quiet': True,
                     'postprocessors': [{
-                        'key': 'FFmpegExtractAudio',
-                        'preferredcodec': 'wav'
+                        'key': 'FFmpegVideoConvertor',
+                        'preferedformat': 'mp4'  # 指定保存视频的格式
                     }],
                     'postprocessor_args': [
-                        '-ar', '16000'
+                        '-r', '25',     # 设置视频帧率为 25 fps
+                        '-ar', '16000'  # 设置音频采样率为 16000 Hz
                     ],
                     'paths': {
                         'temp': memory
@@ -212,26 +189,13 @@ class Audio:
                 session.close()
                 shutil.rmtree(memory, ignore_errors=True)
                 pass
-            # 若來源為 Firstory 播放清單
-            # elif('firstory.me' in item['link']):
-            #     response = requests.get(item['link'], stream=True)
-            #     if(response.status_code!=200):
-            #         print(f"Progress: [{index+1}|{length}]", end='\r')
-            #         continue
-            #     target = os.path.join(folder, f"{item['name']}.wav")
-            #     stream = open(target, 'wb')
-            #     for chunk in response.iter_content(chunk_size=8192):
-            #         _ = stream.write(chunk)
-            #         continue
-            #     stream.close()
-            #     pass
             print(f"Progress: [{index+1}|{length}]", end='\r')
             continue
         print(f"Progress: [{length}|{length}]")
         total = len(os.listdir(folder))
         print(f"Total: [{total}|{length}]")
         if(True):
-            # 壓縮所有音訊檔案
+            # 壓縮所有影片檔案
             shutil.make_archive(
                 base_name='package', 
                 format='zip', 
